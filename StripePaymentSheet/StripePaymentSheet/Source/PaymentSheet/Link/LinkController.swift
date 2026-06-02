@@ -27,6 +27,9 @@ import UIKit
 
             /// The user chose a bank account for payment.
             case bankAccount
+
+            /// The user chose a payment method type that isn't modeled as a card or bank account, such as an LPM.
+            case generic
         }
 
         /// The type of the selected payment method.
@@ -220,10 +223,12 @@ import UIKit
         }
 
         let type: PaymentMethodPreview.PaymentMethodType = switch selectedPaymentDetails.details {
-        case .card, .unparsable:
+        case .card:
             .card
         case .bankAccount:
             .bankAccount
+        case .unparsable:
+            .generic
         }
 
         paymentMethodPreview = .init(
@@ -232,6 +237,24 @@ import UIKit
             label: resolvedLinkBrand.displayName,
             sublabel: selectedPaymentDetails.linkPaymentDetailsFormattedString
         )
+
+        // For generic payment methods with reduced Link branding, load the display metadata icon.
+        if case .unparsable = selectedPaymentDetails.details,
+           let appearance, appearance.reduceLinkBranding,
+           let iconURL = selectedPaymentDetails.display?.icon?.main {
+            let stripeID = selectedPaymentDetails.stripeID
+            Task { [weak self] in
+                guard let self else { return }
+                guard let image = try? await DownloadManager.sharedManager.downloadImage(url: iconURL) else { return }
+                guard self.selectedPaymentDetails?.stripeID == stripeID else { return }
+                self.paymentMethodPreview = PaymentMethodPreview(
+                    paymentMethodType: .generic,
+                    icon: image,
+                    label: self.resolvedLinkBrand.displayName,
+                    sublabel: selectedPaymentDetails.linkPaymentDetailsFormattedString
+                )
+            }
+        }
     }
 
     /// Creates a `LinkController` for the specified `mode`.

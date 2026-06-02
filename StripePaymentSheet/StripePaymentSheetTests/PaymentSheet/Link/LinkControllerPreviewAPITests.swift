@@ -10,6 +10,7 @@ final class LinkControllerPreviewAPITests: XCTestCase {
     @MainActor
     func testPreviewSPISurfaceCompiles() {
         _ = LinkPaymentMethodType.card
+        _ = LinkController.PaymentMethodPreview.PaymentMethodType.generic
         _ = LinkConfiguration(supportedPaymentMethodTypes: [.card])
         _ = LinkConfiguration(paymentMethodTypes: ["link"]).paymentMethodTypes
         _ = LinkConfiguration(supportedPaymentMethodTypes: [.card], allowLogout: false).allowLogout

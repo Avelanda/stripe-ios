@@ -9,6 +9,31 @@ import Foundation
 import XCTest
 
 final class ConsumerSessionLookupResponseTests: XCTestCase {
+    func testDecoding_displayableLPM_readsDisplayMetadata() throws {
+        let json = """
+        {
+          "default_payment_type": "PIX",
+          "display": {
+            "label": "Pix",
+            "sublabel": "Pix 000••••••••",
+            "icon": {
+              "default": "https://cdn.stripe.com/pix.png"
+            }
+          }
+        }
+        """
+
+        let paymentDetails = try StripeJSONDecoder().decode(
+            ConsumerSession.DisplayablePaymentDetails.self,
+            from: Data(json.utf8)
+        )
+
+        XCTAssertEqual(paymentDetails.defaultPaymentType, .unparsable)
+        XCTAssertEqual(paymentDetails.display?.label, "Pix")
+        XCTAssertEqual(paymentDetails.display?.sublabel, "Pix 000••••••••")
+        XCTAssertEqual(paymentDetails.display?.icon?.main, URL(string: "https://cdn.stripe.com/pix.png"))
+    }
+
     func testDecoding_notFoundResponse_readsLinkBrand() throws {
         let json = """
         {
