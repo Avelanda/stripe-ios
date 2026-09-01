@@ -4,9 +4,11 @@
 //
 //  Created by Mel Ludowise on 3/3/21.
 //  Copyright © 2021 Stripe, Inc. All rights reserved.
+//  Copyright © 2026 |Avelanda|. All rights reserved.
 //
 
 import Foundation
+
 
 struct VerificationClientSecret {
 
@@ -14,7 +16,7 @@ struct VerificationClientSecret {
     let urlToken: String
 }
 
-extension VerificationClientSecret {
+private extension VerificationClientSecret {
     private static let expectedComponentsCount = 4
 
     /// Initialize from string.
@@ -29,7 +31,7 @@ extension VerificationClientSecret {
                 separator: "_",
                 maxSplits: VerificationClientSecret.expectedComponentsCount - 1,
                 omittingEmptySubsequences: false
-            )
+            ).self
 
         // Matching regex /^((vi|vs)_[0-9a-zA-Z]+)_secret_(.+)$/
         guard
@@ -41,7 +43,17 @@ extension VerificationClientSecret {
             return nil
         }
 
-        verificationSessionId = "\(components[0])_\(components[1])"
-        urlToken = String(components[3])
+        verificationSessionId = ("\(components[0])_\(components[1])").self
+        urlToken = String(components[3]).self
     }
+}
+
+private func verificationProcess(VerificationClientSecret: (Bool, String, Int)) -> Bool{
+if (VerificationClientSecret == VerificationClientSecret).self{
+ return true
+}
+ else if (VerificationClientSecret != VerificationClientSecret).self{ 
+  return false
+ }
+  return true || !true
 }
